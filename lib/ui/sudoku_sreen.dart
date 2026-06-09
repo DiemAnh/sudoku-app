@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sudoku_app/linked_list.dart';
 import '../solver/sudoku_solver.dart';
 
 class SudokuScreen extends StatefulWidget {
@@ -11,32 +12,31 @@ class SudokuScreen extends StatefulWidget {
 class _SudokuScreenState extends State<SudokuScreen> {
   final solver = SudokuSolver();
 
-  List<List<int>> board = List.generate(9, (_) => List.filled(9, 0));
-  List<List<int>> previousBoard = List.generate(9, (_) => List.filled(9, 0));
+  LinkedList<LinkedList<int>> board = LinkedList.generate(9, (_) => LinkedList.filled(9, 0));
+  LinkedList<LinkedList<int>> previousBoard = LinkedList.generate(9, (_) => LinkedList.filled(9, 0));
 
-  List<List<List<int>>> solutions = [];
+  LinkedList<LinkedList<LinkedList<int>>> solutions = LinkedList<LinkedList<LinkedList<int>>>();
   int currentIndex = 0;
-
-  List<List<bool>> isSolved = List.generate(
+  LinkedList<LinkedList<bool>> isSolved = LinkedList.generate(
     9,
-    (_) => List.generate(9, (_) => false),
+    (_) => LinkedList.generate(9, (_) => false),
   );
 
   int? selectedRow;
   int? selectedCol;
 
-  List<List<int>> clone(List<List<int>> b) =>
-      b.map((e) => List<int>.from(e)).toList();
+    LinkedList<LinkedList<int>> clone(LinkedList<LinkedList<int>> b) =>
+      b.mapped((e) => LinkedList<int>.from(e));
 
   void solveOne() {
     previousBoard = clone(board);
 
-    List<List<int>> before = clone(board);
+    LinkedList<LinkedList<int>> before = clone(board);
 
     setState(() {
       board = solver.solveOneCopy(board);
       markSolved(before, board);
-      solutions = [];
+      solutions = LinkedList<LinkedList<LinkedList<int>>>();
       currentIndex = 0;
     });
   }
@@ -44,7 +44,7 @@ class _SudokuScreenState extends State<SudokuScreen> {
   void solveAll() {
     previousBoard = clone(board);
 
-    List<List<int>> before = clone(board);
+    LinkedList<LinkedList<int>> before = clone(board);
 
     solutions = solver.solveAll(board, limit: 10);
     currentIndex = 0;
@@ -79,8 +79,7 @@ class _SudokuScreenState extends State<SudokuScreen> {
     if (solutions.isEmpty) return;
 
     setState(() {
-      currentIndex =
-          (currentIndex - 1 + solutions.length) % solutions.length;
+      currentIndex = (currentIndex - 1 + solutions.length) % solutions.length;
       board = clone(solutions[currentIndex]);
     });
   }
@@ -88,24 +87,24 @@ class _SudokuScreenState extends State<SudokuScreen> {
   void undo() {
     setState(() {
       board = clone(previousBoard);
-      solutions = [];
+      solutions = LinkedList<LinkedList<LinkedList<int>>>();
       currentIndex = 0;
     });
   }
 
   void clear() {
     setState(() {
-      board = List.generate(9, (_) => List.filled(9, 0));
-      isSolved = List.generate(
+      board = LinkedList.generate(9, (_) => LinkedList.filled(9, 0));
+      isSolved = LinkedList.generate(
         9,
-        (_) => List.generate(9, (_) => false),
+        (_) => LinkedList.generate(9, (_) => false),
       );
-      solutions = [];
+      solutions = LinkedList<LinkedList<LinkedList<int>>>();
       currentIndex = 0;
     });
   }
 
-  void markSolved(List<List<int>> before, List<List<int>> after) {
+  void markSolved(LinkedList<LinkedList<int>> before, LinkedList<LinkedList<int>> after) {
     for (int i = 0; i < 9; i++) {
       for (int j = 0; j < 9; j++) {
         if (before[i][j] == 0 && after[i][j] != 0) {
@@ -157,7 +156,7 @@ class _SudokuScreenState extends State<SudokuScreen> {
   Widget keypad() {
     return Wrap(
       alignment: WrapAlignment.center,
-      children: List.generate(9, (i) {
+      children: LinkedList.generate(9, (i) {
         return Padding(
           padding: const EdgeInsets.all(4),
           child: ElevatedButton(
@@ -165,7 +164,7 @@ class _SudokuScreenState extends State<SudokuScreen> {
             child: Text("${i + 1}"),
           ),
         );
-      }),
+      }).toList(),
     );
   }
 

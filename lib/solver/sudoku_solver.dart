@@ -1,5 +1,7 @@
+import 'package:sudoku_app/linked_list.dart';
+
 class SudokuSolver {
-  bool isValid(List<List<int>> board, int row, int col, int num) {
+  bool isValid(LinkedList<LinkedList<int>> board, int row, int col, int num) {
     for (int i = 0; i < 9; i++) {
       if (board[row][i] == num) return false;
       if (board[i][col] == num) return false;
@@ -19,7 +21,7 @@ class SudokuSolver {
     return true;
   }
 
-  bool solveOne(List<List<int>> board) {
+  bool solveOne(LinkedList<LinkedList<int>> board) {
     for (int row = 0; row < 9; row++) {
       for (int col = 0; col < 9; col++) {
         if (board[row][col] == 0) {
@@ -38,9 +40,8 @@ class SudokuSolver {
     }
     return true;
   }
-
-  List<List<List<int>>> solveAll(List<List<int>> board, {int limit = 100}) {
-    List<List<List<int>>> solutions = [];
+  LinkedList<LinkedList<LinkedList<int>>> solveAll(LinkedList<LinkedList<int>> board, {int limit = 100}) {
+    LinkedList<LinkedList<LinkedList<int>>> solutions = LinkedList<LinkedList<LinkedList<int>>>();
 
     void backtrack() {
       if (solutions.length >= limit) return;
@@ -60,24 +61,21 @@ class SudokuSolver {
         }
       }
 
-      solutions.add(
-        board.map((row) => List<int>.from(row)).toList(),
-      );
+      solutions.add(board.mapped((row) => LinkedList<int>.from(row)));
     }
 
     backtrack();
     return solutions;
   }
 
-List<List<int>> solveOneCopy(List<List<int>> input) {
-  List<List<int>> board =
-      input.map((e) => List<int>.from(e)).toList();
+LinkedList<LinkedList<int>> solveOneCopy(LinkedList<LinkedList<int>> input) {
+  LinkedList<LinkedList<int>> board = input.mapped((e) => LinkedList<int>.from(e));
 
   _solve(board);
   return board;
 }
 
-bool _solve(List<List<int>> board) {
+bool _solve(LinkedList<LinkedList<int>> board) {
   for (int r = 0; r < 9; r++) {
     for (int c = 0; c < 9; c++) {
       if (board[r][c] == 0) {
